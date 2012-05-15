@@ -6,14 +6,14 @@ import (
     "crypto/rand"
     "crypto/tls"
     "encoding/base64"
-    "http"
+    "net/http"
     "io"
-    "json"
+    "encoding/json"
     "os"
     "net"
     "strconv"
     "time"
-    "url"
+    "net/url"
 )
 
 var followUrl, _ = url.Parse("https://stream.twitter.com/1/statuses/filter.json")

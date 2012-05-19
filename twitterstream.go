@@ -23,12 +23,14 @@ var siteStreamUrl, _ = url.Parse("https://betastream.twitter.com/2b/site.json")
 var retryTimeout int64 = 5e9
 
 type streamConn struct {
-    clientConn   *http.ClientConn
+    client   *http.Client
+    /*clientConn   *http.ClientConn*/
     url          *url.URL
     stream       chan *Tweet
     eventStream  chan *Event
     friendStream chan *FriendList
-    authData     string
+    username     string
+    password     string
     postData     string
     stale        bool
 }
@@ -42,36 +44,49 @@ func (conn *streamConn) connect() (*http.Response, os.Error) {
     if conn.stale {
         return nil, os.NewError("Stale connection")
     }
-    var tcpConn net.Conn
-    var err os.Error
-    if proxy := os.Getenv("HTTP_PROXY"); len(proxy) > 0 {
-        proxy_url, _ := url.Parse(proxy)
-        tcpConn, err = net.Dial("tcp", proxy_url.Host)
-    } else {
-        tcpConn, err = net.Dial("tcp", conn.url.Host+":443")
-    }
-    if err != nil {
-        return nil, err
-    }
-    cf := &tls.Config{Rand: rand.Reader, Time: time.Nanoseconds}
-    ssl := tls.Client(tcpConn, cf)
 
-    conn.clientConn = http.NewClientConn(ssl, nil)
+    //This is all not necessary anymore
+    /*var tcpConn net.Conn*/
+    /*var err os.Error*/
+    /*if proxy := os.Getenv("HTTP_PROXY"); len(proxy) > 0 {*/
+        /*proxy_url, _ := url.Parse(proxy)*/
+        /*tcpConn, err = net.Dial("tcp", proxy_url.Host)*/
+    /*} else {*/
+        /*tcpConn, err = net.Dial("tcp", conn.url.Host+":443")*/
+    /*}*/
+    /*if err != nil {*/
+        /*return nil, err*/
+    /*}*/
+    /*cf := &tls.Config{Rand: rand.Reader, Time: time.Nanoseconds}*/
+    /*ssl := tls.Client(tcpConn, cf)*/
+
+    /*conn.clientConn = http.NewClientConn(ssl, nil)*/
+    //end
 
     var req http.Request
-    req.URL = conn.url
-    req.Method = "GET"
-    req.Header = http.Header{}
-    req.Header.Set("Authorization", "Basic "+conn.authData)
-
     if conn.postData != "" {
-        req.Method = "POST"
-        req.Body = nopCloser{bytes.NewBufferString(conn.postData)}
-        req.ContentLength = int64(len(conn.postData))
-        req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+      body := strings.NewReader(postData)
+      req = http.NewRequest("POST", conn.url, body)
+      req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    } else {
+      req = http.NewRequest("GET", conn.url, nil)
     }
+    req.SetBasicAuth(conn.username, conn.password)
 
-    resp, err := conn.clientConn.Do(&req)
+    /*var req http.Request*/
+    /*req.URL = conn.url*/
+    /*req.Method = "GET"*/
+    /*req.Header = http.Header{}*/
+    /*req.Header.Set("Authorization", "Basic "+conn.authData)*/
+
+    /*if conn.postData != "" {*/
+        /*req.Method = "POST"*/
+        /*req.Body = nopCloser{bytes.NewBufferString(conn.postData)}*/
+        /*req.ContentLength = int64(len(conn.postData))*/
+        /*req.Header.Set("Content-Type", "application/x-www-form-urlencoded")*/
+    /*}*/
+
+    resp, err := conn.client.Do(&req)
     if err != nil {
         return nil, err
     }
@@ -179,7 +194,8 @@ func (c *Client) connect(url_ *url.URL, body string) (err os.Error) {
     var resp *http.Response
     //initialize the new stream
     var sc streamConn
-    sc.authData = encodedAuth(c.Username, c.Password)
+    sc.username = c.Username
+    sc.password = c.Password
     sc.postData = body
     sc.url = url_
     resp, err = sc.connect()

@@ -1,13 +1,13 @@
 package twitterstream
 
 import (
+    "errors"
     "bufio"
     "bytes"
     "encoding/base64"
     "net/http"
     "io"
     "encoding/json"
-    "os"
     "strconv"
     "time"
     "net/url"

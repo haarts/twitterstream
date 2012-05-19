@@ -63,13 +63,13 @@ func (conn *streamConn) connect() (*http.Response, error) {
     /*conn.clientConn = http.NewClientConn(ssl, nil)*/
     //end
 
-    var req http.Request
+    var req *http.Request
     if conn.postData != "" {
-      body := strings.NewReader(postData)
-      req = http.NewRequest("POST", conn.url, body)
+      body := strings.NewReader(conn.postData)
+      req, _ = http.NewRequest("POST", conn.url.String(), body)
       req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
     } else {
-      req = http.NewRequest("GET", conn.url, nil)
+      req, _ = http.NewRequest("GET", conn.url.String(), nil)
     }
     req.SetBasicAuth(conn.username, conn.password)
 
@@ -86,7 +86,7 @@ func (conn *streamConn) connect() (*http.Response, error) {
         /*req.Header.Set("Content-Type", "application/x-www-form-urlencoded")*/
     /*}*/
 
-    resp, err := conn.client.Do(&req)
+    resp, err := conn.client.Do(req)
     if err != nil {
         return nil, err
     }

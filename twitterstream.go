@@ -200,7 +200,7 @@ func (c *Client) connect(url_ *url.URL, body string) (err os.Error) {
     sc.url = url_
     resp, err = sc.connect()
     if err != nil {
-        goto Return
+        goto Return //not sure I like this
     }
 
     if resp.StatusCode != 200 {

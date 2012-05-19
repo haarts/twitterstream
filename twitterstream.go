@@ -3,17 +3,15 @@ package twitterstream
 import (
     "bufio"
     "bytes"
-    "crypto/rand"
-    "crypto/tls"
     "encoding/base64"
     "net/http"
     "io"
     "encoding/json"
     "os"
-    "net"
     "strconv"
     "time"
     "net/url"
+    "strings"
 )
 
 var followUrl, _     = url.Parse("https://stream.twitter.com/1/statuses/filter.json")

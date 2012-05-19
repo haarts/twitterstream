@@ -101,7 +101,6 @@ func (conn *streamConn) readStream(resp *http.Response) {
     for {
         //we've been closed
         if conn.stale {
-            conn.clientConn.Close()
             break
         }
 

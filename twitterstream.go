@@ -40,9 +40,9 @@ func (conn *streamConn) Close() {
     conn.stale = true
 }
 
-func (conn *streamConn) connect() (*http.Response, os.Error) {
+func (conn *streamConn) connect() (*http.Response, error) {
     if conn.stale {
-        return nil, os.NewError("Stale connection")
+        return nil, errors.New("Stale connection")
     }
 
     //This is all not necessary anymore
@@ -114,7 +114,7 @@ func (conn *streamConn) readStream(resp *http.Response) {
             //try reconnecting
             resp, err := conn.connect()
             if err != nil {
-                println(err.String())
+                println(err.Error())
                 time.Sleep(retryTimeout)
                 continue
             }
@@ -168,7 +168,7 @@ type nopCloser struct {
     io.Reader
 }
 
-func (nopCloser) Close() os.Error { return nil }
+func (nopCloser) Close() error { return nil }
 
 type Client struct {
     Username     string
@@ -186,9 +186,9 @@ func NewClient(username, password string) *Client {
     }
 }
 
-func (c *Client) connect(url_ *url.URL, body string) (err os.Error) {
+func (c *Client) connect(url_ *url.URL, body string) (err error) {
     if c.Username == "" || c.Password == "" {
-        return os.NewError("The username or password is empty")
+        return errors.New("The username or password is empty")
     }
 
     var resp *http.Response
@@ -204,7 +204,7 @@ func (c *Client) connect(url_ *url.URL, body string) (err os.Error) {
     }
 
     if resp.StatusCode != 200 {
-        err = os.NewError("Twitterstream HTTP Error: " + resp.Status +
+        err = errors.New("Twitterstream HTTP Error: " + resp.Status +
             "\n" + url_.Path)
         goto Return
     }
@@ -225,7 +225,7 @@ Return:
 }
 
 // Follow a list of user ids
-func (c *Client) Follow(ids []int64, stream chan *Tweet) os.Error {
+func (c *Client) Follow(ids []int64, stream chan *Tweet) error {
     c.stream = stream
     var body bytes.Buffer
     body.WriteString("follow=")
@@ -239,7 +239,7 @@ func (c *Client) Follow(ids []int64, stream chan *Tweet) os.Error {
 }
 
 // Track a list of topics
-func (c *Client) Track(topics []string, stream chan *Tweet) os.Error {
+func (c *Client) Track(topics []string, stream chan *Tweet) error {
     c.stream = stream
     var body bytes.Buffer
     body.WriteString("track=")
@@ -253,13 +253,13 @@ func (c *Client) Track(topics []string, stream chan *Tweet) os.Error {
 }
 
 // Filter a list of user ids
-func (c *Client) Sample(stream chan *Tweet) os.Error {
+func (c *Client) Sample(stream chan *Tweet) error {
     c.stream = stream
     return c.connect(sampleUrl, "")
 }
 
 // Track User tweets and events
-func (c *Client) User(stream chan *Tweet, eventStream chan *Event, friendStream chan *FriendList) os.Error {
+func (c *Client) User(stream chan *Tweet, eventStream chan *Event, friendStream chan *FriendList) error {
     c.stream = stream
     c.eventStream = eventStream
     c.friendStream = friendStream

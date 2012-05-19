@@ -17,7 +17,7 @@ import (
 )
 
 var followUrl, _     = url.Parse("https://stream.twitter.com/1/statuses/filter.json")
-var trackUrl, _      = url.Parse("http://stream.twitter.com/1/statuses/filter.json")
+var trackUrl, _      = url.Parse("https://stream.twitter.com/1/statuses/filter.json")
 var sampleUrl, _     = url.Parse("http://stream.twitter.com/1/statuses/sample.json")
 var userUrl, _       = url.Parse("http://userstream.twitter.com/2/user.json")
 var siteStreamUrl, _ = url.Parse("https://betastream.twitter.com/2b/site.json")

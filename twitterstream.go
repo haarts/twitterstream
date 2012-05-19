@@ -229,7 +229,7 @@ func (c *Client) Follow(ids []int64, stream chan *Tweet) error {
     var body bytes.Buffer
     body.WriteString("follow=")
     for i, id := range ids {
-        body.WriteString(strconv.Itoa64(id))
+        body.WriteString(strconv.FormatInt(id, 10))
         if i != len(ids)-1 {
             body.WriteString(",")
         }

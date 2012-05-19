@@ -188,7 +188,7 @@ func NewClient(username, password string) *Client {
 
 func (c *Client) connect(url_ *url.URL, body string) (err os.Error) {
     if c.Username == "" || c.Password == "" {
-        return os.NewError("The username or password is invalid")
+        return os.NewError("The username or password is empty")
     }
 
     var resp *http.Response

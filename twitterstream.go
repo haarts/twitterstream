@@ -20,7 +20,7 @@ var sampleUrl, _     = url.Parse("http://stream.twitter.com/1/statuses/sample.js
 var userUrl, _       = url.Parse("http://userstream.twitter.com/2/user.json")
 var siteStreamUrl, _ = url.Parse("https://betastream.twitter.com/2b/site.json")
 
-var retryTimeout int64 = 5e9
+var retryTimeout = time.Duration(5*time.Second)
 
 type streamConn struct {
     client   *http.Client

@@ -39,4 +39,4 @@ This is an example of using the `Track` method:
         }
     }
 
-For more information about this API, visit the [documentation page](http://apiwiki.twitter.com/Streaming-API-Documentation). 
+For more information about this API, visit the [documentation page](https://dev.twitter.com/docs/api/). 

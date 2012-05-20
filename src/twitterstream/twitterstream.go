@@ -63,6 +63,7 @@ func (conn *streamConn) connect() (*http.Response, error) {
     /*conn.clientConn = http.NewClientConn(ssl, nil)*/
     //end
 
+    conn.client = &http.Client{}
     var req *http.Request
     if conn.postData != "" {
       body := strings.NewReader(conn.postData)
